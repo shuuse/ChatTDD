@@ -1,5 +1,6 @@
 import json
 import os
+import keyring
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
@@ -9,14 +10,16 @@ from dotenv import load_dotenv, find_dotenv
 
 
 def initialize_model():
-    load_dotenv(find_dotenv())  # Load .env file, if it exists
     openai_api_key = os.getenv('OPENAI_API_KEY')
     if not openai_api_key:
-        openai_api_key = input("Please enter your OpenAI API key: ")
-        with open('.env', 'w') as env_file:
-            env_file.write(f'OPENAI_API_KEY={openai_api_key}\n')
+        openai_api_key = keyring.get_password('openai', 'api_key')
+        if not openai_api_key:
+            openai_api_key = input("Please enter your OpenAI API key: ")
+            keyring.set_password('openai', 'api_key', openai_api_key)
+    
+    os.environ['OPENAI_API_KEY'] = openai_api_key
     set_llm_cache(InMemoryCache())
-    model = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
+    model = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key, verbose=True)
     return model
 
 

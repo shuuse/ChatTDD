@@ -3,6 +3,8 @@ import os
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
+from langchain.globals import set_llm_cache
+from langchain.cache import InMemoryCache
 from dotenv import load_dotenv, find_dotenv
 
 
@@ -13,6 +15,7 @@ def initialize_model():
         openai_api_key = input("Please enter your OpenAI API key: ")
         with open('.env', 'w') as env_file:
             env_file.write(f'OPENAI_API_KEY={openai_api_key}\n')
+    set_llm_cache(InMemoryCache())
     model = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
     return model
 

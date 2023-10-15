@@ -13,9 +13,9 @@ def initialize_model():
         openai_api_key = input("Please enter your OpenAI API key: ")
         with open('.env', 'w') as env_file:
             env_file.write(f'OPENAI_API_KEY={openai_api_key}\n')
-    model = ChatOpenAI(model_name="gpt-3.5-turbo")
-
+    model = ChatOpenAI(model_name="gpt-3.5-turbo", openai_api_key=openai_api_key)
     return model
+
 
 def generate_function(model, input_description):
     template = """

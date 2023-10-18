@@ -40,8 +40,8 @@ def generate_and_save(description_str, save_function_code=True):
     write_to_file(generated_test_code_output['test_code'], f'tests/{test_file_name}')
 
     if save_function_code:
-        function_file_name = generated_test_code_output['function_file_name']
-        write_to_file(generated_test_code_output['function_code'], f'src/{function_file_name}')
+        function_filepath = generated_test_code_output['function_file_path']
+        write_to_file(generated_test_code_output['function_code'], f'{function_filepath}')
 
     click.echo(f"Generated test for function: {generated_test_code_output['function_name']}")
 
@@ -49,6 +49,7 @@ def generate_and_save(description_str, save_function_code=True):
 @cli.command()
 @click.argument('description', nargs=-1)
 def test_and_code(description):
+    """Generate function and Pytest"""
     description_str = ' '.join(description)
     generate_and_save(description_str)
 
@@ -56,6 +57,7 @@ def test_and_code(description):
 @cli.command()
 @click.argument('description', nargs=-1)
 def test(description):
+    """Generate Pytest"""
     description_str = ' '.join(description)
     generate_and_save(description_str, save_function_code=False)
 

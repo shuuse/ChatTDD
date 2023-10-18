@@ -1,7 +1,7 @@
 
 # ChatTDD
 
-ChatTDD is a Python utility designed to assist developers in building Test-Driven Python code. By leveraging the OpenAI API, ChatTDD automates the generation of function code and corresponding tests based on a simple textual description of the desired functionality.
+ChatTDD is a utility designed to help developers create Test-Driven Python code using Langchain and OpenAI. By entering a description of the functionality you need, ChatTDD will generate pytest code for that function. Additionally, it allows you to review and validate the generated test code using different models from OpenAI.
 
 ## Installation
 
@@ -19,12 +19,17 @@ On the first run, ChatTDD will prompt you to enter your OpenAI API key, which wi
 
 ## Usage
 
-ChatTDD provides two main commands: `test-and-code` and `test`. 
+Once installed, you can use the chattdd command to interact with the tool. Here's how to use ChatTDD:
 
-- The `test-and-code` command generates both the function code and the test code based on the provided description.
-- The `test` command generates only the test code.
+### Select a Model
+You can choose between three models: text-davinci-003, gpt-3.5-turbo, and gpt-4. 
+To select a model, use the following command:
 
-Here's how you can use these commands:
+```markdown
+chattdd model text-davinci-003
+```
+
+Your model selection will be remembered for future sessions.
 
 ### Generate Function and Test Code
 
@@ -32,13 +37,15 @@ Here's how you can use these commands:
 chattdd test-and-code "sort a list of objects alphabetically"
 ```
 
+ChatTDD will create the necessary Python files under the `src` and `tests` directories respectively.
+
 ### Generate Only Test Code
 
 ```markdown
 chattdd test "sort a list of objects alphabetically"
 ```
 
-ChatTDD will create the necessary Python files under the `src` and `tests` directories respectively.
+ChatTDD will create the necessary Python files under the `tests` directory.
 
 ## Contributing
 

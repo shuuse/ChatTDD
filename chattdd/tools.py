@@ -28,16 +28,17 @@ def update_config(key, value):
 
 
 def extract_json(s):
-    match = re.search(r'{\s*.*\s*}', s, re.DOTALL)
-    if match:
-        json_str = match.group(0)
-        try:
-            # Optionally, check if it's valid JSON
-            json.loads(json_str)
-            return json_str
-        except json.JSONDecodeError:
-            print("Matched string is not valid JSON")
-            return None
-    else:
+    try:
+        start_idx = s.index('{')
+        end_idx = s.rindex('}') + 1  
+    except ValueError:
         print("No JSON found")
+        return None
+    
+    json_str = s[start_idx:end_idx]
+    try:
+        json_object = json.loads(json_str)
+        return json.dumps(json_object, indent=4) 
+    except json.JSONDecodeError as e:
+        print(f"Failed to decode JSON: {e}")
         return None

@@ -1,9 +1,8 @@
 import click
-import os
 import pytest
 from chattdd.core import initialize_model, generate_test_code, review_test_code
 from chattdd.file_handler import write_to_file
-from chattdd.tools import update_config
+from chattdd.tools import update_config, load_config
 
 @click.group()
 def cli():
@@ -27,7 +26,8 @@ def model(model_name):
 
 
 def generate_and_save(description_str, save_function_code=True):
-    model_name = os.getenv('CHATTDD_MODEL', 'text-davinci-003') 
+    config = load_config()
+    model_name = config['CHATTDD_MODEL']
     model = initialize_model(model_name)
 
     while True:
@@ -48,11 +48,13 @@ def generate_and_save(description_str, save_function_code=True):
     test_file_path = generated_test_code_output['test_file_path']
     write_to_file(generated_test_code_output['test_code'], f'{test_file_path}')
 
+    click.echo(f"\nGenerated test for function: {generated_test_code_output['function_name']}")
+
     if save_function_code:
         function_filepath = generated_test_code_output['function_file_path']
         write_to_file(generated_test_code_output['function_code'], f'{function_filepath}')
-
-    click.echo(f"\nGenerated test for function: {generated_test_code_output['function_name']}")
+        click.echo(f"..also generated function: {generated_test_code_output['function_name']}")
+    
     pytest.main(['-v'])
 
 @cli.command()

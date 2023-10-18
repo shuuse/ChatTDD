@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ChatTDD',
-    version='0.1.8',
+    version='0.1.9',
     packages=find_packages(),
     install_requires=[
         'click==8.0.3',

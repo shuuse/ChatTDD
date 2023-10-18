@@ -29,7 +29,7 @@ def initialize_model(model_name=None):
     elif model_name == 'gpt-3.5-turbo':
         model = ChatOpenAI(model_name="gpt-3.5-turbo", max_tokens=3000, temperature=0, openai_api_key=openai_api_key)
     elif model_name == 'gpt-4':
-        model = ChatOpenAI(model_name="gpt-4", max_tokens=7000, temperature=0, openai_api_key=openai_api_key)
+        model = ChatOpenAI(model_name="gpt-4", max_tokens=3000, temperature=0, openai_api_key=openai_api_key)
     else:
         raise ValueError(f'Unsupported model: {model_name}')
     
@@ -104,7 +104,8 @@ def review_test_code(model, original_request, function_name, test_code):
 if __name__ == "__main__":
     model = initialize_model()
     #user_input = "sort a list alphabetically descending order"
-    user_input = "sort a list of objects alphabetically"
+    #user_input = "sort a list of objects alphabetically"
+    user_input = "Please implement the function sort_list_alphabetically that sorts a list alphabetically "
     test_code_json = generate_test_code(model, user_input)
     original_request = test_code_json['original_request']
     function_name = test_code_json['function_name']

@@ -1,4 +1,4 @@
 {
-    "CHATTDD_MODEL": "text-davinci-003",
+    "CHATTDD_MODEL": "gpt-4",
     "OUTPUTFOLDER": "dummytests"
 }

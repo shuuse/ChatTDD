@@ -2,14 +2,15 @@ from setuptools import setup, find_packages
 
 setup(
     name='ChatTDD',
-    version='0.1.6',
+    version='0.1.7',
     packages=find_packages(),
     install_requires=[
         'click==8.0.3',
         'openai==0.27.0',
         'pytest==6.2.5',
         'python-dotenv==1.0.0',
-        'langchain==0.0.314'
+        'langchain==0.0.314', 
+        'keyring==24.2.0'
     ],
     entry_points={
         'console_scripts': [

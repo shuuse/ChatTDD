@@ -37,27 +37,24 @@ def initialize_model(model_name=None):
 
 
 def generate_test_code(model, user_input):
-    config = load_config()
-    output_folder = config['OUTPUTFOLDER']
-    
     template = """
     You are a code generator that follows all principles of Test Driven Development. 
     You adhere to PEP 8.
     Your task is to generate function code AND pytest test code, and place it in a JSON return without any explanations or comments. 
     When writing the pytest file please include required setup or teardown code and use a descriptive test function name.
-    The user will prompt you with a required task. Imagine that the user already has a python function that solves this requirement. DO NOT write the function. Your job is just to write the pytest for such a function.
+    The user will prompt you with a required task. Your job is to write the function in one file and the pytest for such a function in another file. Remember to import the function name into the test file.
     Your reply will be JSON with 7 elements only, absolutely no comments.:
      1. original_request: the original request from the user. No changes.
      2. function_name: a short function name that reflects the users request.
-     3. test_code: python code file that includes a single function, namely the pytest for a function that would test a function that soleves the users requirements. The function to test will be found in the {output_folder} folder with a filename you suggest, so remember the import. No comments. 
-     4. test_file_path: path and file name for the pytest test code. The file should be stored in the {output_folder} folder.
+     3. test_code: python code file that includes a single function, namely the pytest for a function that would test a function that soleves the users requirements. The function to test will be found in the same directory as the test file and have a filename you suggest, so remember the "import from".
+     4. test_file_name: file name for the pytest test code.
      5. pytest_result: an empty string (we will fill this later)
      6. function_code: python code file that includes a single function, namely the function that the pytest is testing. The function solves the users requirements. No comments.
-     7. function_file_path: path and file name used in the test file.
+     7. function_file_name: file name used in the test file.
 
      
     You will return this in a JSON format. Keys are: 
-    "original_request, "function_name", "test_code", "test_file_path", "pytest_result", "function_code", "function_file_path"
+    "original_request, "function_name", "test_code", "test_file_name", "pytest_result", "function_code", "function_file_name"
 
     Return only the JSON object with no additional text or formatting.
 
@@ -67,7 +64,7 @@ def generate_test_code(model, user_input):
     )
     chain = generated_test_code_prompt | model | StrOutputParser()
 
-    generated_test_code = chain.invoke({'user_input': user_input, 'output_folder': output_folder})
+    generated_test_code = chain.invoke({'user_input': user_input})
     test_code_json = extract_json(generated_test_code)
     return json.loads(test_code_json)
 
@@ -77,6 +74,7 @@ def review_test_code(model, original_request, function_name, test_code):
 
     You don't have the function code, only the pytest code. In other words, the test code is missing the implementation of {function_name}. This is correct and should not reject the test code.
     Here's the pytest file contents represented in a string, it contains escape sequences that you should ignore: 
+    Remember to check that the function to test is imported. 
 
     "
     {test_code}
@@ -102,6 +100,9 @@ def review_test_code(model, original_request, function_name, test_code):
 
 
 if __name__ == "__main__":
+    from chattdd.file_handler import write_to_file
+    import pytest
+
     model = initialize_model()
     #user_input = "sort a list alphabetically descending order"
     #user_input = "sort a list of objects alphabetically"
@@ -110,9 +111,16 @@ if __name__ == "__main__":
     original_request = test_code_json['original_request']
     function_name = test_code_json['function_name']
     test_code = test_code_json['test_code']
+    test_file_name = test_code_json['test_file_name']
+    function_file_name = test_code_json['function_file_name']
+    function_code = test_code_json['function_code']
     test_review_json = review_test_code(model, original_request, function_name, test_code)
 
     print("Generated Test Code JSON:")
     print(json.dumps(test_code_json, indent=4))
     print("\nTest Review JSON:")
     print(json.dumps(test_review_json, indent=4))
+    
+    write_to_file(test_code, test_file_name)
+    write_to_file(function_code, function_file_name)
+    pytest.main(['-v'])

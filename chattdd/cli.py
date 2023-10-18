@@ -45,14 +45,13 @@ def generate_and_save(description_str, save_function_code=True):
             click.echo(f"\nComments on the test generated: {review_output.get('comment')}")
             break
 
-    test_file_path = generated_test_code_output['test_file_path']
-    write_to_file(generated_test_code_output['test_code'], f'{test_file_path}')
+    write_to_file(generated_test_code_output['test_code'], generated_test_code_output['test_file_name'])
 
     click.echo(f"\nGenerated test for function: {generated_test_code_output['function_name']}")
 
     if save_function_code:
-        function_filepath = generated_test_code_output['function_file_path']
-        write_to_file(generated_test_code_output['function_code'], f'{function_filepath}')
+        function_file_name = generated_test_code_output['function_file_name']
+        write_to_file(generated_test_code_output['function_code'], generated_test_code_output['function_file_name'])
         click.echo(f"..also generated function: {generated_test_code_output['function_name']}")
     
     pytest.main(['-v'])

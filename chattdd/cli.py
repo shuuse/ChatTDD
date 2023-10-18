@@ -1,5 +1,6 @@
 import click
 import os
+import pytest
 from chattdd.core import initialize_model, generate_test_code, review_test_code
 from chattdd.file_handler import write_to_file
 
@@ -43,8 +44,8 @@ def generate_and_save(description_str, save_function_code=True):
         function_filepath = generated_test_code_output['function_file_path']
         write_to_file(generated_test_code_output['function_code'], f'{function_filepath}')
 
-    click.echo(f"Generated test for function: {generated_test_code_output['function_name']}")
-
+    click.echo(f"\nGenerated test for function: {generated_test_code_output['function_name']}")
+    pytest.main(['-v'])
 
 @cli.command()
 @click.argument('description', nargs=-1)

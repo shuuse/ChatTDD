@@ -10,7 +10,7 @@ def load_config():
         # Create config file with default values if it doesn't exist
         default_config = {
             "CHATTDD_MODEL": "text-davinci-003",
-            "OUTPUTFOLDER": "chattdd"
+            "OUTPUTFOLDER": "ChatTDDgenerated"
         }
         with open(CONFIG_FILE_PATH, 'w') as file:
             json.dump(default_config, file, indent=4)

@@ -27,9 +27,9 @@ def initialize_model(model_name=None):
     if model_name == 'text-davinci-003':
         model = OpenAI(model_name="text-davinci-003", max_tokens=3000, temperature=0, openai_api_key=openai_api_key)
     elif model_name == 'gpt-3.5-turbo':
-        model = ChatOpenAI(model_name="gpt-3.5-turbo", max_tokens=30000, temperature=0, openai_api_key=openai_api_key)
+        model = ChatOpenAI(model_name="gpt-3.5-turbo", max_tokens=3000, temperature=0, openai_api_key=openai_api_key)
     elif model_name == 'gpt-4':
-        model = ChatOpenAI(model_name="gpt-4", max_tokens=30000, temperature=0, openai_api_key=openai_api_key)
+        model = ChatOpenAI(model_name="gpt-4", max_tokens=7000, temperature=0, openai_api_key=openai_api_key)
     else:
         raise ValueError(f'Unsupported model: {model_name}')
     

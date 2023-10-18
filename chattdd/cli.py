@@ -1,5 +1,6 @@
 import click
-from chattdd.core import initialize_model, generate_function
+import os
+from chattdd.core import initialize_model, generate_test_code, review_test_code
 from chattdd.file_handler import write_to_file
 
 
@@ -8,32 +9,41 @@ def cli():
     pass
 
 
+@cli.command()
+@click.argument('model_name', type=click.Choice(['text-davinci-003', 'gpt-3.5-turbo', 'gpt-4'], case_sensitive=False))
+def model(model_name):
+    """Select a model."""
+    os.environ['CHATTDD_MODEL'] = model_name
+    click.echo(f'Model set to {model_name}')
+
+
 def generate_and_save(description_str, save_function_code=True):
-    click.echo(f"Generating code for: {description_str}")
+    model_name = os.getenv('CHATTDD_MODEL', 'text-davinci-003') 
+    model = initialize_model(model_name)
 
-    # Initialize Langchain model
-    model = initialize_model()
+    while True:
+        click.echo(f"\nUsing {model_name} to create test code for function: {description_str}\n")
+        generated_test_code_output = generate_test_code(model, description_str)
+        review_output = review_test_code(
+            model=model,
+            original_request=generated_test_code_output['original_request'],
+            function_name=generated_test_code_output['function_name'],
+            test_code=generated_test_code_output['test_code']
+        )
 
-    # Invoke langchain model
-    try:
-        output_json = generate_function(model, description_str)
-    except Exception as e:
-        click.echo(f"Error: {e}")
-        return
+        review_result = review_output.get('result')
+        if review_result == 'GO' or review_result is None:
+            click.echo(f"\nComments on the test generated: {review_output.get('comment')}")
+            break
 
-    # Interpret results
-    function_name = output_json['function_name']
-    function_code = output_json['function_code']
-    function_file_name = output_json['function_file_name']
-    test_code = output_json['test_code']
-    test_file_name = output_json['test_file_name']
+    test_file_name = generated_test_code_output['test_file_name']
+    write_to_file(generated_test_code_output['test_code'], f'tests/{test_file_name}')
 
-    # Write to files
-    write_to_file(test_code, f'tests/{test_file_name}')
     if save_function_code:
-        write_to_file(function_code, f'src/{function_file_name}')
+        function_file_name = generated_test_code_output['function_file_name']
+        write_to_file(generated_test_code_output['function_code'], f'src/{function_file_name}')
 
-    click.echo(f"Generated function: {function_name}")
+    click.echo(f"Generated test for function: {generated_test_code_output['function_name']}")
 
 
 @cli.command()

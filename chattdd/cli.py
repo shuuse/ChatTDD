@@ -3,7 +3,7 @@ import os
 import pytest
 from chattdd.core import initialize_model, generate_test_code, review_test_code
 from chattdd.file_handler import write_to_file
-
+from chattdd.tools import update_config
 
 @click.group()
 def cli():
@@ -11,10 +11,18 @@ def cli():
 
 
 @cli.command()
+@click.argument('outputfolder')
+def outputfolder(outputfolder):
+    """Set output folder."""
+    update_config('OUTPUTFOLDER', outputfolder)
+    click.echo(f'Output folder set to {outputfolder}')
+
+
+@cli.command()
 @click.argument('model_name', type=click.Choice(['text-davinci-003', 'gpt-3.5-turbo', 'gpt-4'], case_sensitive=False))
 def model(model_name):
     """Select a model."""
-    os.environ['CHATTDD_MODEL'] = model_name
+    update_config('CHATTDD_MODEL', model_name)
     click.echo(f'Model set to {model_name}')
 
 
@@ -37,8 +45,8 @@ def generate_and_save(description_str, save_function_code=True):
             click.echo(f"\nComments on the test generated: {review_output.get('comment')}")
             break
 
-    test_file_name = generated_test_code_output['test_file_name']
-    write_to_file(generated_test_code_output['test_code'], f'tests/{test_file_name}')
+    test_file_path = generated_test_code_output['test_file_path']
+    write_to_file(generated_test_code_output['test_code'], f'{test_file_path}')
 
     if save_function_code:
         function_filepath = generated_test_code_output['function_file_path']

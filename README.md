@@ -31,6 +31,13 @@ chattdd model text-davinci-003
 
 Your model selection will be remembered for future sessions.
 
+### Output Folder
+
+```markdown
+chattdd outputfolder [folder_path]
+```
+Sets the root folder for generated files. If this is left blank, files will be saved in the specified relative paths without a leading folder.
+
 ### Generate Function and Test Code
 
 ```markdown

@@ -7,12 +7,12 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.globals import set_llm_cache
 from langchain.cache import InMemoryCache
-from chattdd.tools import extract_json
+from chattdd.tools import extract_json, load_config
 
 
 def initialize_model(model_name=None):
-    if not model_name:
-        model_name = os.getenv('CHATTDD_MODEL', 'text-davinci-003')  # Default model
+    config = load_config()
+    model_name = config['CHATTDD_MODEL']
 
     openai_api_key = os.getenv('OPENAI_API_KEY')
     if not openai_api_key:
@@ -37,6 +37,9 @@ def initialize_model(model_name=None):
 
 
 def generate_test_code(model, user_input):
+    config = load_config()
+    output_folder = config['OUTPUTFOLDER']
+    
     template = """
     You are a code generator that follows all principles of Test Driven Development. 
     You adhere to PEP 8.
@@ -46,15 +49,15 @@ def generate_test_code(model, user_input):
     Your reply will be JSON with 7 elements only, absolutely no comments.:
      1. original_request: the original request from the user. No changes.
      2. function_name: a short function name that reflects the users request.
-     3. test_code: python code file that includes a single function, namely the pytest for a function that would test a function that soleves the users requirements. The function to test will be found in the src folder with a filename you suggest. No comments. 
-     4. test_file_name: a file name for the pytest test code.
+     3. test_code: python code file that includes a single function, namely the pytest for a function that would test a function that soleves the users requirements. The function to test will be found in the {output_folder} folder with a filename you suggest, so remember the import. No comments. 
+     4. test_file_path: path and file name for the pytest test code. The file should be stored in the {output_folder} folder.
      5. pytest_result: an empty string (we will fill this later)
      6. function_code: python code file that includes a single function, namely the function that the pytest is testing. The function solves the users requirements. No comments.
-     7. function_file_path:  path and file name used in the test file.
+     7. function_file_path: path and file name used in the test file.
 
      
     You will return this in a JSON format. Keys are: 
-    "original_request, "function_name", "test_code", "test_file_name", "pytest_result", "function_code", "function_file_path"
+    "original_request, "function_name", "test_code", "test_file_path", "pytest_result", "function_code", "function_file_path"
 
     Return only the JSON object with no additional text or formatting.
 
@@ -64,7 +67,7 @@ def generate_test_code(model, user_input):
     )
     chain = generated_test_code_prompt | model | StrOutputParser()
 
-    generated_test_code = chain.invoke({'user_input': user_input})
+    generated_test_code = chain.invoke({'user_input': user_input, 'output_folder': output_folder})
     test_code_json = extract_json(generated_test_code)
     return json.loads(test_code_json)
 

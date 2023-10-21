@@ -4,6 +4,18 @@ import os
 
 CONFIG_FILE_PATH = os.path.join(os.getcwd(), 'chattdd_config.json')
 
+def strip_extra_quotes(s):
+    s = s.strip()
+
+    if s.endswith(','):
+        s = s[:-1]
+
+    s = s.strip()
+
+    if len(s) > 1 and (s[0] == s[-1] and s[0] in ["'", '"']):
+        return s[1:-1]
+    
+    return s
 
 def load_config():
     if not os.path.exists(CONFIG_FILE_PATH):

@@ -1,8 +1,7 @@
 import click
 import pytest
 from chattdd.core import initialize_model, generate_test_code, review_test_code
-from chattdd.file_handler import write_to_file
-from chattdd.tools import update_config, load_config
+from chattdd.tools import update_config, load_config, write_to_file
 
 @click.group()
 def cli():
@@ -73,4 +72,4 @@ def test(description):
 
 
 if __name__ == "__main__":
-    cli()
+    generate_and_save(description_str="print hello world", save_function_code=True)

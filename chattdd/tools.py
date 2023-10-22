@@ -81,7 +81,7 @@ def parse_string_to_dict(input_str: str) -> dict:
             return result
 
     except json.JSONDecodeError:
-        return {}
+        return {"comment": input_str}
 
-    return {}
+    return {"comment": input_str}
 

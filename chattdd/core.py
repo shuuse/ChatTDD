@@ -87,7 +87,7 @@ def review_test_code(model, original_request, function_name, test_code):
 
     No introduction or politeness. Your response MUST be a Python Dictionary in the following format:
     1. result: "GO" if the test can be accepted. "REJECTED" if the test isn't up your standards.
-    2. comment: an evaluation of the test code and the test's overall performance for testing a function to "{original_request}
+    2. comment: an evaluation of the test code and the test's overall performance for testing a function to {original_request}
 
     """
     generated_test_review_prompt = ChatPromptTemplate.from_messages(
@@ -107,15 +107,22 @@ if __name__ == "__main__":
     model = initialize_model()
     #user_input = "sort a list alphabetically descending order"
     #user_input = "sort a list of objects alphabetically"
-    user_input = "list the prime numbers between 100 and 1000"
+    #user_input = "list the prime numbers between 100 and 1000"
     #user_input = "Please implement a function that sorts a list alphabetically "
+    user_input = 'test this' #should fail code generation
     test_code_dict = generate_test_code(model, user_input, )
-    original_request = test_code_dict['original_request']
-    function_name = test_code_dict['function_name']
-    test_code = test_code_dict['test_code']
-    test_file_name = test_code_dict['test_file_name']
-    function_file_name = test_code_dict['function_file_name']
-    function_code = test_code_dict['function_code']
+    comment = None
+    try:
+        original_request = test_code_dict['original_request']
+        function_name = test_code_dict['function_name']
+        test_code = test_code_dict['test_code']
+        test_file_name = test_code_dict['test_file_name']
+        function_file_name = test_code_dict['function_file_name']
+        function_code = test_code_dict['function_code']
+    except KeyError as e:
+        comment = test_code_dict['comment']
+        print(comment)
+        raise KeyError(f"ChatTDD made a mistake. The key {e} not found in the provided dictionary.")
     test_review_json = review_test_code(model, original_request, function_name, test_code)
     
     if is_valid_syntax(test_code):

@@ -1,7 +1,7 @@
 
 # ChatTDD
 
-ChatTDD is a utility designed to help developers create Test-Driven Python code using Langchain and OpenAI. By entering a description of the functionality you need, ChatTDD will generate pytest code for that function. Additionally, it allows you to review and validate the generated test code using different models from OpenAI.
+ChatTDD is a utility designed to help developers create Test-Driven Python code using Langchain and OpenAI. By entering a description of the functionality you need, ChatTDD will generate code for that function based on a test. 
 
 ## Installation
 
@@ -13,9 +13,15 @@ pip install ChatTDD
 
 ## Configuration
 
-Before using ChatTDD, you'll need to have an OpenAI API key. If you don't have one, you can obtain it from [OpenAI](https://beta.openai.com/signup/).
+Before using ChatTDD, you'll need to have an OpenAI API key. If you don't have one, you can obtain it from [OpenAI](https://beta.openai.com/signup/). Remember, using your api key with ChatTDD or any other client will come with a cost to you - so be warned and run at your own risk.
 
-On the first run, ChatTDD will prompt you to enter your OpenAI API key, which will be saved for future use.
+Update your environment with your api key:
+```markdown
+export OPENAI_API_KEY='[your key here]'
+```
+
+If a key isn't present in the environment then ChatTDD will prompt you to enter it.
+
 
 ## Usage
 
@@ -38,13 +44,20 @@ chattdd outputfolder [folder_path]
 ```
 Sets the root folder for generated files. If this is left blank, files will be saved in the specified relative paths without a leading folder.
 
-### Generate Function and Test Code
+### Generate Test code & feature functions
+
+Simply run
+```markdown
+chattdd
+```
+ChatTdd will ask for your requirement.
+Alternative:
 
 ```markdown
 chattdd test-and-code "sort a list of objects alphabetically"
 ```
 
-ChatTDD will create the necessary Python files under the `src` and `tests` directories respectively.
+ChatTDD will create the necessary Python files under the default directory or the directory you have setup with the 'outputfolder' command.
 
 ### Generate Only Test Code
 

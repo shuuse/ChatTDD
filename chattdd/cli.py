@@ -3,10 +3,14 @@ import pytest
 from chattdd.core import initialize_model, generate_test_code, review_test_code
 from chattdd.tools import update_config, load_config, write_to_file
 
-@click.group()
-def cli():
-    pass
-
+@click.group(invoke_without_command=True)
+@click.pass_context
+def cli(ctx):
+    """Main entry point for ChatTDD CLI."""
+    if ctx.invoked_subcommand is None:
+        # Prompt user for function requirement if 'chattdd' is typed without any subcommands
+        user_requirement = click.prompt("Please enter the functional requirement")
+        ctx.invoke(test_and_code, user_requirement=user_requirement.split())
 
 @cli.command()
 @click.argument('outputfolder')
@@ -15,7 +19,6 @@ def outputfolder(outputfolder):
     update_config('OUTPUTFOLDER', outputfolder)
     click.echo(f'Output folder set to {outputfolder}')
 
-
 @cli.command()
 @click.argument('model_name', type=click.Choice(['text-davinci-003', 'gpt-3.5-turbo', 'gpt-4'], case_sensitive=False))
 def model(model_name):
@@ -23,15 +26,14 @@ def model(model_name):
     update_config('CHATTDD_MODEL', model_name)
     click.echo(f'Model set to {model_name}')
 
-
-def generate_and_save(description_str, save_function_code=True):
+def generate_and_save(user_requirement, save_function_code=True):
     config = load_config()
     model_name = config['CHATTDD_MODEL']
     model = initialize_model(model_name)
 
     while True:
-        click.echo(f"\nUsing {model_name} to create test code for function: {description_str}\n")
-        generated_test_code_output = generate_test_code(model, description_str)
+        click.echo(f"\nUsing {model_name} to create test code for function: {user_requirement}\n")
+        generated_test_code_output = generate_test_code(model, user_requirement)
         review_output = review_test_code(
             model=model,
             original_request=generated_test_code_output['original_request'],
@@ -49,27 +51,24 @@ def generate_and_save(description_str, save_function_code=True):
     click.echo(f"\nGenerated test for function: {generated_test_code_output['function_name']}")
 
     if save_function_code:
-        function_file_name = generated_test_code_output['function_file_name']
         write_to_file(generated_test_code_output['function_code'], generated_test_code_output['function_file_name'])
         click.echo(f"..also generated function: {generated_test_code_output['function_name']}")
     
     pytest.main(['-v'])
 
 @cli.command()
-@click.argument('description', nargs=-1)
-def test_and_code(description):
+@click.argument('user_requirement', nargs=-1)
+def test_and_code(user_requirement):
     """Generate function and Pytest"""
-    description_str = ' '.join(description)
-    generate_and_save(description_str)
-
+    user_requirement_str = ' '.join(user_requirement)
+    generate_and_save(user_requirement_str)
 
 @cli.command()
-@click.argument('description', nargs=-1)
-def test(description):
+@click.argument('user_requirement', nargs=-1)
+def test(user_requirement):
     """Generate Pytest"""
-    description_str = ' '.join(description)
-    generate_and_save(description_str, save_function_code=False)
-
+    user_requirement_str = ' '.join(user_requirement)
+    generate_and_save(user_requirement_str, save_function_code=False)
 
 if __name__ == "__main__":
-    generate_and_save(description_str="print hello world", save_function_code=True)
+    cli()

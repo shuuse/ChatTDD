@@ -50,7 +50,7 @@ Simply run
 ```markdown
 chattdd
 ```
-ChatTdd will ask for your requirement.
+ChatTDD will ask for your requirement.
 Alternative:
 
 ```markdown

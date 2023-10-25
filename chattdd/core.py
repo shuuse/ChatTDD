@@ -35,7 +35,7 @@ def initialize_model(model_name=None):
     return model
 
 
-def generate_test_code(model, user_input):
+def generate_test_code(model, user_input, comment_from_last_run):
     config = load_config()
     base_directory = config['OUTPUTFOLDER']
     
@@ -47,6 +47,8 @@ def generate_test_code(model, user_input):
     When writing the pytest file please include required setup or teardown code and use a descriptive test function name. 
     Both the test and function file will be saved in the base directory named {base_directory}, so add that to the include path of the test file.
     The user will prompt you with a required task. Your job is to write the function in one file and the pytest for such a function in another file. Remember to import the function name into the test file.
+    {comment_from_last_run}
+    
     No introduction or politeness. Your response MUST be a Python Dictionary in the following format:
      1. original_request: the original request from the user. No changes.
      2. function_name: a short function name that reflects the users request.
@@ -62,7 +64,7 @@ def generate_test_code(model, user_input):
     )
     chain = generated_test_code_prompt | model | StrOutputParser()
 
-    generated_test_code_result = chain.invoke({'user_input': user_input, 'base_directory': base_directory})
+    generated_test_code_result = chain.invoke({'user_input': user_input, 'base_directory': base_directory, 'comment_from_last_run': comment_from_last_run})
     
     data_dict = parse_string_to_dict(generated_test_code_result)
 

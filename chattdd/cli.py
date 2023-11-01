@@ -1,5 +1,5 @@
 import click
-import logic
+import chattdd.logic
 
 @click.group(invoke_without_command=True)
 @click.pass_context

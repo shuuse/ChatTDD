@@ -1,6 +1,5 @@
 import json
 import os
-import base64
 import ast
 
 CONFIG_FILE_PATH = os.path.join(os.getcwd(), 'chattdd_config.json')

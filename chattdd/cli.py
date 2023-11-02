@@ -1,5 +1,5 @@
 import click
-import chattdd.logic
+from chattdd.logic import set_output_folder, generate_and_save_logic, set_model
 
 @click.group(invoke_without_command=True)
 @click.pass_context
@@ -15,7 +15,7 @@ def cli(ctx):
 @click.argument('outputfolder')
 def outputfolder(outputfolder):
     try:
-        logic.set_output_folder(outputfolder)
+        set_output_folder(outputfolder)
         click.echo(f'Output folder set to {outputfolder}')
     except Exception as e:
         click.echo(f"Failed to set output folder. Error: {str(e)}")
@@ -24,7 +24,7 @@ def outputfolder(outputfolder):
 @click.argument('model_name', type=click.Choice(['text-davinci-003', 'gpt-3.5-turbo', 'gpt-4'], case_sensitive=False))
 def model(model_name):
     try:
-        logic.set_model(model_name)
+        set_model(model_name)
         click.echo(f'Model set to {model_name}')
     except Exception as e:
         click.echo(f"Failed to set model. Error: {str(e)}")
@@ -33,7 +33,7 @@ def model(model_name):
 @click.argument('user_requirement', nargs=-1)
 def test_and_code(user_requirement):
     user_requirement_str = ' '.join(user_requirement)
-    comment, output = logic.generate_and_save_logic(user_requirement_str)
+    comment, output = generate_and_save_logic(user_requirement_str)
     if output:
         click.echo(f"\nGenerated test for function: {output['function_name']}")
         click.echo(f"..also generated function: {output['function_name']}")
@@ -44,7 +44,7 @@ def test_and_code(user_requirement):
 @click.argument('user_requirement', nargs=-1)
 def test(user_requirement):
     user_requirement_str = ' '.join(user_requirement)
-    comment, _ = logic.generate_and_save_logic(user_requirement_str, save_function_code=False)
+    comment, _ = generate_and_save_logic(user_requirement_str, save_function_code=False)
     click.echo(comment)
 
 if __name__ == "__main__":

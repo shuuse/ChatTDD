@@ -28,8 +28,9 @@ def load_config():
     if not os.path.exists(CONFIG_FILE_PATH):
         # Create config file with default values if it doesn't exist
         default_config = {
-            "CHATTDD_MODEL": "text-davinci-003",
-            "OUTPUTFOLDER": "ChatTDDgenerated"
+            "CHATTDD_MODEL": "gpt-4",
+            "OUTPUTFOLDER": "ChatTDDgenerated", 
+            "ITERATIONS": 1
         }
         with open(CONFIG_FILE_PATH, 'w') as file:
             json.dump(default_config, file, indent=4)

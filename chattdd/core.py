@@ -12,7 +12,7 @@ from chattdd.tools import load_config, parse_string_to_dict, is_valid_syntax
 def initialize_model(model_name=None):
     config = load_config()
     model_name = config['CHATTDD_MODEL']
-
+    print(f'Setting up agent using {model_name}')
     openai_api_key = os.getenv('OPENAI_API_KEY')
     if not openai_api_key:
         openai_api_key = keyring.get_password('openai', 'api_key')
@@ -64,6 +64,8 @@ def generate_test_code(model, user_input, comment_from_last_run):
     )
     chain = generated_test_code_prompt | model | StrOutputParser()
 
+    print(f'\nGenerating tests code')
+
     generated_test_code_result = chain.invoke({'user_input': user_input, 'base_directory': base_directory, 'comment_from_last_run': comment_from_last_run})
     
     data_dict = parse_string_to_dict(generated_test_code_result)
@@ -96,6 +98,9 @@ def review_test_code(model, original_request, function_name, test_code):
         [("system", template)]
     )
     chain = generated_test_review_prompt | model | StrOutputParser()
+    
+    print(f'Reviewing tests')
+
     chain_test_review = chain.invoke({'original_request': original_request, 'function_name': function_name, 'test_code': test_code})
     data_dict = parse_string_to_dict(chain_test_review)
 

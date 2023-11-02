@@ -16,11 +16,16 @@ def generate_and_save_logic(user_requirement, save_function_code=True, iteration
     comment = ''
 
     for i in range(iterations):
+        if __debug__:
+            print("Calling generate_test_code")
         generated_test_code_output = generate_test_code(model, user_requirement, comment)
 
         test_code = generated_test_code_output.get('test_code')
         if not test_code:
             return generated_test_code_output.get('comment', 'No comment available'), None
+
+        if __debug__:
+            print("Calling review_test_code")
 
         review_output = review_test_code(
             model=model,
@@ -31,11 +36,16 @@ def generate_and_save_logic(user_requirement, save_function_code=True, iteration
 
         review_result = review_output.get('result')
         comment = review_output.get('comment', 'No comment available')
-
+        if __debug__:
+            print(f"review_result: {review_result}")
+            
         if review_result == "GO":
             break
 
     if review_result == "GO":
+        if __debug__:
+            print("write_to_file")
+            
         write_to_file(test_code, generated_test_code_output['test_file_name'])
 
         if save_function_code:
